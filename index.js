@@ -1,7 +1,24 @@
+const debuggerStartup = require("debug")("app:startup");
+const dbDebugger = require("debug")("app:db");
+const config = require("config");
 const Joi = require("joi");
+const morgan = require("morgan");
 const express = require("express");
 const app = express();
-app.use(express.json());
+
+if (app.get("env") === "development") {
+  app.use(morgan("tiny"));
+  debuggerStartup("Morgan Enabled");
+}
+
+// db work
+dbDebugger("Connected to database");
+
+// custom middleware
+app.use(function (res, req, next) {
+  console.log("Logging....");
+  next();
+});
 
 const courses = [
   { id: 1, name: "course1" },
@@ -69,4 +86,8 @@ function validateCourse(course) {
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}... `));
 
-
+// middleware
+// built in middlewares
+// app.use(express.json());
+// app.use(express.urlencoded());
+// app.use(express.static());
